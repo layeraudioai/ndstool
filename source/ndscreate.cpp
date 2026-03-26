@@ -148,17 +148,20 @@ void AddFile(const char *unused_rootdir, const char *prefix, const char *entry_n
 	file_top = (file_top + file_align) &~ file_align;
 	fseek(fNDS, file_top, SEEK_SET);
 
+	const char* path_prefix = (prefix && prefix[0] == '/' && prefix[1] == '\0') ? "" : prefix;
+
 	FILE *fi = NULL;
 	for (int i = 0; i < filerootdir_num; i++) {
 		strcpy(strbuf, filerootdirs[i]);
-		strcat(strbuf, prefix);
+		if (strbuf[strlen(strbuf)-1] != '/' && path_prefix[0] != '/') strcat(strbuf, "/");
+		strcat(strbuf, path_prefix);
 		strcat(strbuf, entry_name);
 		fi = fopen(strbuf, "rb");
 		if (fi) break;
 	}
 
 	if (!fi) {
-		fprintf(stderr, "Cannot find file '%s%s' in any data root.\n", prefix, entry_name);
+		fprintf(stderr, "Cannot find file '%s%s' in any data root.\n", path_prefix, entry_name);
 		exit(1);
 	}
 
@@ -282,7 +285,11 @@ void AddDirectory(TreeNode *node, const char *prefix, unsigned int this_dir_id, 
 		if (t->directory)
 		{
 			char strbuf[MAXPATHLEN];
-			strcpy(strbuf, prefix);
+			if (strcmp(prefix, "/") == 0) {
+				strbuf[0] = '/'; strbuf[1] = '\0';
+			} else {
+				strcpy(strbuf, prefix);
+			}
 			strcat(strbuf, t->name);
 			strcat(strbuf, "/");
 			AddDirectory(t->directory, strbuf, t->dir_id, this_dir_id);

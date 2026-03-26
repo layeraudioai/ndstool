@@ -10,7 +10,7 @@ extern int filerootdir_num;
  */
 void MkDir(char *name)
 {
-#ifdef __MINGW32__
+#if defined(__MINGW32__) || defined(_WIN32)
 	if (mkdir(name))
 #else
 	if (mkdir(name, S_IRWXU))
@@ -51,9 +51,12 @@ void ExtractFile(const char *rootdir, const char *prefix, const char *entry_name
 	if (rootdir)
 	{
 		// make filename
+		const char* path_prefix = (prefix && prefix[0] == '/' && prefix[1] == '\0') ? "" : prefix;
 		char filename[MAXPATHLEN];
 		strcpy(filename, rootdir);
-		strcat(filename, prefix);
+		if (filename[strlen(filename)-1] != '/' && path_prefix[0] != '/')
+			strcat(filename, "/");
+		strcat(filename, path_prefix);
 		strcat(filename, entry_name);
 
 		fseek(fNDS, top, SEEK_SET);
@@ -150,8 +153,11 @@ void ExtractDirectory(const char *prefix, unsigned int dir_id)
 			
 			if (filerootdir_num > 0)
 			{
+				const char* path_prefix = (prefix && prefix[0] == '/' && prefix[1] == '\0') ? "" : prefix;
 				strcpy(strbuf, filerootdirs[0]);
-				strcat(strbuf, prefix);
+				if (strbuf[strlen(strbuf)-1] != '/' && path_prefix[0] != '/')
+					strcat(strbuf, "/");
+				strcat(strbuf, path_prefix);
 				strcat(strbuf, entry_name);
 				MkDir(strbuf);
 			}
