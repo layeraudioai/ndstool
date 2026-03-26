@@ -12,6 +12,8 @@
 #include "encryption.h"
 #include "banner.h"
 
+const char CompileDate[] = NDSTOOL_DATE;
+
 /*
  * Variables
  */
@@ -22,11 +24,12 @@ char *romlistfilename = 0;
 char *filemasks[MAX_FILEMASKS];
 int filemask_num = 0;
 char *ndsfilename = 0;
+char *filerootdirs[MAX_FILEMASKS];
+int filerootdir_num = 0;
 char *arm7filename = 0;
 char *arm9filename = 0;
 char *arm7ifilename = 0;
 char *arm9ifilename = 0;
-char *filerootdir = 0;
 char *overlaydir = 0;
 char *arm7ovltablefilename = 0;
 char *arm9ovltablefilename = 0;
@@ -265,7 +268,15 @@ int main(int argc, char *argv[])
 				}
 
 				// file root directory
-				case 'd': REQUIRED(filerootdir); break;
+				case 'd':
+				{
+					char *temp = 0;
+					REQUIRED(temp);
+					if (temp && filerootdir_num < MAX_FILEMASKS) {
+						filerootdirs[filerootdir_num++] = temp;
+					}
+					break;
+				}
 
 				// ARM7 filename
 				case '7': 
@@ -501,7 +512,7 @@ int main(int argc, char *argv[])
 				if (arm9ovltablefilename) Extract(arm9ovltablefilename, true, 0x50, true, 0x54);
 				if (arm7ovltablefilename) Extract(arm7ovltablefilename, true, 0x58, true, 0x5C);
 				if (overlaydir) ExtractOverlayFiles();
-				if (filerootdir) ExtractFiles(ndsfilename);
+				if (filerootdir_num > 0) ExtractFiles(ndsfilename);
 				break;
 			}
 
@@ -510,7 +521,7 @@ int main(int argc, char *argv[])
 				break;
 
 			case ACTION_LISTFILES:
-				filerootdir = 0;
+				// filerootdir is no longer a single global variable
 				/*status =*/ ExtractFiles(ndsfilename);
 				break;
 			

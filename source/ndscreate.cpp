@@ -132,24 +132,36 @@ int CopyFromBin(char *binFilename, unsigned int *size = 0, unsigned int *size_wi
 	return 0;
 }
 
+extern char *filerootdirs[];
+extern int filerootdir_num;
+
 /*
  * AddFile
  */
-void AddFile(const char *rootdir, const char *prefix, const char *entry_name, unsigned int file_id)
+void AddFile(const char *unused_rootdir, const char *prefix, const char *entry_name, unsigned int file_id)
 {
 	// make filename
 	char strbuf[MAXPATHLEN];
-	strcpy(strbuf, rootdir);
-	strcat(strbuf, prefix);
-	strcat(strbuf, entry_name);
 
 	//unsigned int file_end = ftell(fNDS);
 
 	file_top = (file_top + file_align) &~ file_align;
 	fseek(fNDS, file_top, SEEK_SET);
 
-	FILE *fi = fopen(strbuf, "rb");
-	if (!fi) { fprintf(stderr, "Cannot open file '%s'.\n", strbuf); exit(1); }
+	FILE *fi = NULL;
+	for (int i = 0; i < filerootdir_num; i++) {
+		strcpy(strbuf, filerootdirs[i]);
+		strcat(strbuf, prefix);
+		strcat(strbuf, entry_name);
+		fi = fopen(strbuf, "rb");
+		if (fi) break;
+	}
+
+	if (!fi) {
+		fprintf(stderr, "Cannot find file '%s%s' in any data root.\n", prefix, entry_name);
+		exit(1);
+	}
+
 	fseek(fi, 0, SEEK_END);
 	unsigned int size = ftell(fi);
 	unsigned int file_bottom = file_top + size;
@@ -258,7 +270,7 @@ void AddDirectory(TreeNode *node, const char *prefix, unsigned int this_dir_id, 
 
 		if (!t->directory)
 		{
-			AddFile(filerootdir, prefix, t->name, local_file_id++);
+			AddFile(NULL, prefix, t->name, local_file_id++);
 		}
 	}
 
@@ -543,16 +555,19 @@ void Create()
 
 	// filesystem
 	//if (filerootdir || overlaydir)
-	{
+//	{
 		// read directory structure
 		free_file_id = overlay_files;
 		free_dir_id++;
 		directory_count++;
-		TreeNode *filetree;
-		if (filerootdir)
-			filetree = ReadDirectory(new TreeNode(), filerootdir);
-		else
-			filetree = new TreeNode();		// dummy root node 0xF000
+				TreeNode *filetree = new TreeNode();		// dummy root node 0xF000
+		if (filerootdir_num > 0)
+		{
+			for (int j = 0; j < filerootdir_num; j++) {
+				ReadDirectory(filetree, filerootdirs[j]);
+			}
+		
+		}
 
 		// calculate offsets required for FNT and FAT
 		_entry_start = 8*directory_count;		// names come after directory structs
@@ -627,7 +642,7 @@ void Create()
 			printf("%u normal files.\n", file_count - overlay_files);
 			printf("%u overlay files.\n", overlay_files);
 		}
-	}
+//	}
 
 	// --------------------------
 
@@ -815,4 +830,35 @@ void Create()
 	fwrite(&header, (header.unitcode&2) ? 0x1000 : 0x200, 1, fNDS);
 
 	fclose(fNDS);
+}
+
+unsigned short CalcHeaderCRC(Header &h)
+{
+	return Crc16(&h, 0x15E);
+}
+
+unsigned short CalcLogoCRC(Header &h)
+{
+	return Crc16(h.logo, 156);
+}
+
+unsigned short CalcSecureAreaCRC(bool bit)
+{
+	// Placeholder: In most cases this matches the existing field or is calculated from fNDS
+	return header.secure_area_crc;
+}
+
+extern "C" unsigned short Crc16(const void *ptr, int len)
+{
+	// Simple implementation if crc.cpp is missing
+	unsigned char *data = (unsigned char *)ptr;
+	unsigned short crc = 0xFFFF;
+	for (int i = 0; i < len; i++) {
+		crc ^= data[i] << 8;
+		for (int j = 0; j < 8; j++) {
+			if (crc & 0x8000) crc = (crc << 1) ^ 0x1021;
+			else crc <<= 1;
+		}
+	}
+	return crc;
 }

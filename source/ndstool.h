@@ -18,6 +18,8 @@
 
 #define MAX_FILEMASKS		16
 
+#define Compile_Date 20262503
+
 enum { BANNER_BINARY, BANNER_IMAGE };
 
 extern unsigned int free_file_id;
@@ -43,7 +45,6 @@ extern int filemask_num;
 extern char *ndsfilename;
 extern char *arm7filename;
 extern char *arm9filename;
-extern char *filerootdir;
 extern char *overlaydir;
 extern char *arm7ovltablefilename;
 extern char *arm9ovltablefilename;
@@ -72,4 +73,11 @@ extern int latency1;
 extern int latency2;
 extern unsigned int romversion;
 
-extern const char CompileDate[];
+void ShowInfo(char *ndsfilename);
+void FixHeaderCRC(char *ndsfilename);
+unsigned short CalcHeaderCRC(Header &h);
+unsigned short CalcLogoCRC(Header &h);
+unsigned short CalcSecureAreaCRC(bool bit);
+int DetectRomType();
+
+extern "C" unsigned short Crc16(const void *ptr, int len);
