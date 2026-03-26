@@ -104,8 +104,8 @@ typedef struct {
 	unsigned char MetaTileWidth;
 	unsigned char MetaTileHeight;
 	
-	unsigned_int  GfxWidth;
-	unsigned_int  GfxHeight;
+	unsigned int  GfxWidth;
+	unsigned int  GfxHeight;
 } GRF_HEADER;
 
 void IconFromGRF() {
@@ -113,7 +113,7 @@ void IconFromGRF() {
 	FILE     * GrfFile;
 	unsigned char *GrfData;
 	unsigned char *GrfPtr;
-	unsigned   GrfSize;
+	unsigned int  GrfSize;
 	
 	GRF_HEADER * GrfHeader;
 	unsigned char   *GfxData;

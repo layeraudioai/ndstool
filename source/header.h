@@ -13,109 +13,109 @@ struct Header
 	unsigned char nds_region;
 	unsigned char romversion;
 	unsigned char reserved2;						// 0x01F
-	unsigned_int arm9_rom_offset;					// points to libsyscall and rest of ARM9 binary
-	unsigned_int arm9_entry_address;
-	unsigned_int arm9_ram_address;
-	unsigned_int arm9_size;
-	unsigned_int arm7_rom_offset;
-	unsigned_int arm7_entry_address;
-	unsigned_int arm7_ram_address;
-	unsigned_int arm7_size;
-	unsigned_int fnt_offset;
-	unsigned_int fnt_size;
-	unsigned_int fat_offset;
-	unsigned_int fat_size;
-	unsigned_int arm9_overlay_offset;
-	unsigned_int arm9_overlay_size;
-	unsigned_int arm7_overlay_offset;
-	unsigned_int arm7_overlay_size;
-	unsigned_int rom_control_info1;					// 0x00416657 for OneTimePROM
-	unsigned_int rom_control_info2;					// 0x081808F8 for OneTimePROM
-	unsigned_int banner_offset;
-	unsigned_short secure_area_crc;
-	unsigned_short rom_control_info3;				// 0x0D7E for OneTimePROM
-	unsigned_int offset_0x70;						// magic1 (64 bit encrypted magic code to disable LFSR)
-	unsigned_int offset_0x74;						// magic2
-	unsigned_int offset_0x78;						// unique ID for homebrew
-	unsigned_int offset_0x7C;						// unique ID for homebrew
-	unsigned_int application_end_offset;			// rom size
-	unsigned_int rom_header_size;
-	unsigned_int offset_0x88;						// reserved... ?
-	unsigned_int offset_0x8C;
+	unsigned int arm9_rom_offset;					// points to libsyscall and rest of ARM9 binary
+	unsigned int arm9_entry_address;
+	unsigned int arm9_ram_address;
+	unsigned int arm9_size;
+	unsigned int arm7_rom_offset;
+	unsigned int arm7_entry_address;
+	unsigned int arm7_ram_address;
+	unsigned int arm7_size;
+	unsigned int fnt_offset;
+	unsigned int fnt_size;
+	unsigned int fat_offset;
+	unsigned int fat_size;
+	unsigned int arm9_overlay_offset;
+	unsigned int arm9_overlay_size;
+	unsigned int arm7_overlay_offset;
+	unsigned int arm7_overlay_size;
+	unsigned int rom_control_info1;					// 0x00416657 for OneTimePROM
+	unsigned int rom_control_info2;					// 0x081808F8 for OneTimePROM
+	unsigned int banner_offset;
+	unsigned short secure_area_crc;
+	unsigned short rom_control_info3;				// 0x0D7E for OneTimePROM
+	unsigned int offset_0x70;						// magic1 (64 bit encrypted magic code to disable LFSR)
+	unsigned int offset_0x74;						// magic2
+	unsigned int offset_0x78;						// unique ID for homebrew
+	unsigned int offset_0x7C;						// unique ID for homebrew
+	unsigned int application_end_offset;			// rom size
+	unsigned int rom_header_size;
+	unsigned int offset_0x88;						// reserved... ?
+	unsigned int offset_0x8C;
 
 	// reserved
-	unsigned_int offset_0x90;
-	unsigned_int offset_0x94;
-	unsigned_int offset_0x98;
-	unsigned_int offset_0x9C;
-	unsigned_int offset_0xA0;
-	unsigned_int offset_0xA4;
-	unsigned_int offset_0xA8;
-	unsigned_int offset_0xAC;
-	unsigned_int offset_0xB0;
-	unsigned_int offset_0xB4;
-	unsigned_int offset_0xB8;
-	unsigned_int offset_0xBC;
+	unsigned int offset_0x90;
+	unsigned int offset_0x94;
+	unsigned int offset_0x98;
+	unsigned int offset_0x9C;
+	unsigned int offset_0xA0;
+	unsigned int offset_0xA4;
+	unsigned int offset_0xA8;
+	unsigned int offset_0xAC;
+	unsigned int offset_0xB0;
+	unsigned int offset_0xB4;
+	unsigned int offset_0xB8;
+	unsigned int offset_0xBC;
 
 	unsigned char logo[156];						// character data
-	unsigned_short logo_crc;
-	unsigned_short header_crc;
+	unsigned short logo_crc;
+	unsigned short header_crc;
 
 	// 0x160..0x17F reserved
-	unsigned_int debug_rom_offset;
-	unsigned_int debug_size;
-	unsigned_int debug_ram_address;
-	unsigned_int offset_0x16C;
+	unsigned int debug_rom_offset;
+	unsigned int debug_size;
+	unsigned int debug_ram_address;
+	unsigned int offset_0x16C;
 	unsigned char zero[0x10];
 
 	// DSi extended stuff below
 	u8 global_mbk_setting[5][4];
-	unsigned_int arm9_mbk_setting[3];
-	unsigned_int arm7_mbk_setting[3];
-	unsigned_int mbk9_wramcnt_setting;
+	unsigned int arm9_mbk_setting[3];
+	unsigned int arm7_mbk_setting[3];
+	unsigned int mbk9_wramcnt_setting;
 
-	unsigned_int region_flags;
-	unsigned_int access_control;
-	unsigned_int scfg_ext_mask;
+	unsigned int region_flags;
+	unsigned int access_control;
+	unsigned int scfg_ext_mask;
 	u8 offset_0x1BC[3];
 	u8 appflags;
 
-	unsigned_int dsi9_rom_offset;
-	unsigned_int offset_0x1C4;
-	unsigned_int dsi9_ram_address;
-	unsigned_int dsi9_size;
-	unsigned_int dsi7_rom_offset;
-	unsigned_int device_list_ram_address;
-	unsigned_int dsi7_ram_address;
-	unsigned_int dsi7_size;
+	unsigned int dsi9_rom_offset;
+	unsigned int offset_0x1C4;
+	unsigned int dsi9_ram_address;
+	unsigned int dsi9_size;
+	unsigned int dsi7_rom_offset;
+	unsigned int device_list_ram_address;
+	unsigned int dsi7_ram_address;
+	unsigned int dsi7_size;
 
-	unsigned_int digest_ntr_start;
-	unsigned_int digest_ntr_size;
-	unsigned_int digest_twl_start;
-	unsigned_int digest_twl_size;
-	unsigned_int sector_hashtable_start;
-	unsigned_int sector_hashtable_size;
-	unsigned_int block_hashtable_start;
-	unsigned_int block_hashtable_size;
-	unsigned_int digest_sector_size;
-	unsigned_int digest_block_sectorcount;
+	unsigned int digest_ntr_start;
+	unsigned int digest_ntr_size;
+	unsigned int digest_twl_start;
+	unsigned int digest_twl_size;
+	unsigned int sector_hashtable_start;
+	unsigned int sector_hashtable_size;
+	unsigned int block_hashtable_start;
+	unsigned int block_hashtable_size;
+	unsigned int digest_sector_size;
+	unsigned int digest_block_sectorcount;
 
-	unsigned_int banner_size;
-	unsigned_int offset_0x20C;
-	unsigned_int total_rom_size;
-	unsigned_int offset_0x214;
-	unsigned_int offset_0x218;
-	unsigned_int offset_0x21C;
+	unsigned int banner_size;
+	unsigned int offset_0x20C;
+	unsigned int total_rom_size;
+	unsigned int offset_0x214;
+	unsigned int offset_0x218;
+	unsigned int offset_0x21C;
 
-	unsigned_int modcrypt1_start;
-	unsigned_int modcrypt1_size;
-	unsigned_int modcrypt2_start;
-	unsigned_int modcrypt2_size;
+	unsigned int modcrypt1_start;
+	unsigned int modcrypt1_size;
+	unsigned int modcrypt2_start;
+	unsigned int modcrypt2_size;
 
-	unsigned_int tid_low;
-	unsigned_int tid_high;
-	unsigned_int public_sav_size;
-	unsigned_int private_sav_size;
+	unsigned int tid_low;
+	unsigned int tid_high;
+	unsigned int public_sav_size;
+	unsigned int private_sav_size;
 	u8 reserved3[176];
 	u8 age_ratings[0x10];
 

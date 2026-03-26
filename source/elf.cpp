@@ -24,28 +24,30 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <vector>
+#include <utility>
 
 /* Project header files. */
 #include "ndstool.h"
 #include "elf.h"
 
-std::vector<std::pair<unsigned_int, unsigned_int>> overlay_fat_entries;
+std::vector<std::pair<unsigned int, unsigned int>> overlay_fat_entries;
 
 struct OvlTableEntry {
-	unsigned_int overlay_id;
-	unsigned_int ram_address;
-	unsigned_int load_size;
-	unsigned_int bss_size;
-	unsigned_int ctors_start;
-	unsigned_int ctors_end;
-	unsigned_int file_id;
-	unsigned_int reserved;
+	unsigned int overlay_id;
+	unsigned int ram_address;
+	unsigned int load_size;
+	unsigned int bss_size;
+	unsigned int ctors_start;
+	unsigned int ctors_end;
+	unsigned int file_id;
+	unsigned int reserved;
 };
 
 struct OvlTableEntryShort {
-	unsigned_int ctors_start;
-	unsigned_int ctors_end;
-	unsigned_int reserved;
+	unsigned int ctors_start;
+	unsigned int ctors_end;
+	unsigned int reserved;
 };
 
 /* Simple assertion macro. */

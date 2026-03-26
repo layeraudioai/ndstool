@@ -1,40 +1,46 @@
-CXX      := g++
-CXXFLAGS := -O2 -Wall -Wextra
-LDFLAGS  := -static
+NDSTOOL_DATE ?= $(shell date +"%b %e %Y")
 
-# Definitions for version and build date used in ndstool.cpp
-VERSION := 2.1.2
-DATE    := $(shell date +%Y%m%d)
-CXXFLAGS += -DPACKAGE_VERSION=\"$(VERSION)\" -DNDSTOOL_DATE=\"$(DATE)\"
+NDSTOOL_DATE ?= $(shell date +"%b %e %Y")
 
-# Source files inferred from the includes in ndstool.cpp and ndscreate.cpp
-SRCS := ndstool.cpp \
-        ndscreate.cpp \
-        ndsextract.cpp \
-        sha1.cpp \
-        hook.cpp \
-        encryption.cpp \
-        banner.cpp \
-        logo.cpp \
-        raster.cpp \
-        ndstree.cpp \
-        elf.cpp \
-        loadme.cpp \
-        crc.cpp
+CXX := g++
+CC  := gcc
+CXXFLAGS := -O2 -Wall -Wextra -I. -DNDSTOOL_DATE="\"$(NDSTOOL_DATE)\"" -DPACKAGE_VERSION="\"xbcx\""
+CFLAGS   := -O2 -Wall -Wextra -I.
+LDFLAGS  := 
 
-OBJS := $(SRCS:.cpp=.o)
-TARGET := ndstool
+TARGET := ../ndstool
 
-# Main rules
+SRCS_CPP := banner.cpp \
+            crc.cpp \
+            elf.cpp \
+            hook.cpp \
+            logo.cpp \
+            ndscreate.cpp \
+            ndstool.cpp \
+            ndstree.cpp \
+            raster.cpp \
+            sha1.cpp \
+            ndsextract.cpp \
+            encryption.cpp \
+            header.cpp \
+            ndscodes.cpp
+
+SRCS_C   := loadme.c
+
+OBJS     := $(SRCS_CPP:.cpp=.o) $(SRCS_C:.c=.o)
+
 all: $(TARGET)
 
 $(TARGET): $(OBJS)
-	$(CXX) $(LDFLAGS) -o $@ $(OBJS)
+	$(CXX) $(LDFLAGS) -o $@ $^
 
 %.o: %.cpp
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
+%.o: %.c
+	$(CC) $(CFLAGS) -c $< -o $@
+
 clean:
-	rm -f $(OBJS) $(TARGET) $(TARGET).exe
+	rm -f $(OBJS) $(TARGET)
 
 .PHONY: all clean

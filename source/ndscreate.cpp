@@ -120,7 +120,7 @@ int CopyFromBin(char *binFilename, unsigned int *size = 0, unsigned int *size_wi
 	if (size_without_footer)
 	{
 		fseek(fi, _size - 3*4, SEEK_SET);
-		unsigned_int nitrocode;
+		unsigned int nitrocode;
 		fread(&nitrocode, sizeof(nitrocode), 1, fi);
 		if (nitrocode == 0xDEC00621)
 			*size_without_footer = _size - 3*4;
@@ -189,9 +189,9 @@ void AddFile(const char *unused_rootdir, const char *prefix, const char *entry_n
 
 	// write fat
 	fseek(fNDS, header.fat_offset + 8*file_id, SEEK_SET);
-	unsigned_int top = file_top;
+	unsigned int top = file_top;
 	fwrite(&top, 1, sizeof(top), fNDS);
-	unsigned_int bottom = file_bottom;
+	unsigned int bottom = file_bottom;
 	fwrite(&bottom, 1, sizeof(bottom), fNDS);
 
 	file_top = file_bottom;
@@ -210,12 +210,12 @@ void AddDirectory(TreeNode *node, const char *prefix, unsigned int this_dir_id, 
 
 	// write directory info
 	fseek(fNDS, header.fnt_offset + 8*(this_dir_id & 0xFFF), SEEK_SET);
-	unsigned_int entry_start = _entry_start;	// reference location of entry name
+	unsigned int entry_start = _entry_start;	// reference location of entry name
 	fwrite(&entry_start, 1, sizeof(entry_start), fNDS);
 	unsigned int _top_file_id = free_file_id;
-	unsigned_short top_file_id = _top_file_id;	// file ID of top entry
+	unsigned short top_file_id = _top_file_id;	// file ID of top entry
 	fwrite(&top_file_id, 1, sizeof(top_file_id), fNDS);
-	unsigned_short parent_id = _parent_id;	// ID of parent directory or directory count (root)
+	unsigned short parent_id = _parent_id;	// ID of parent directory or directory count (root)
 	fwrite(&parent_id, 1, sizeof(parent_id), fNDS);
 
 	//printf("dir %X file_id %u +\n", this_dir_id, (int)top_file_id);
@@ -253,7 +253,7 @@ void AddDirectory(TreeNode *node, const char *prefix, unsigned int this_dir_id, 
 
 				//printf("[ %s -> %X ]\n", t->name, t->dir_id);
 
-				unsigned_short _dir_id_tmp = t->dir_id;
+				unsigned short _dir_id_tmp = t->dir_id;
 				fwrite(&_dir_id_tmp, 1, sizeof(_dir_id_tmp), fNDS);
 				_entry_start += sizeof(_dir_id_tmp);
 			}
@@ -370,7 +370,7 @@ void Create()
 		else if (headersize == 0x200)
 		{
 			header.reserved2 = 0x04;		// autostart
-			*(unsigned_int *)(((unsigned char *)&header) + 0x0) = 0xEA00002E;		// for PassMe's that start @ 0x08000000
+			*(unsigned int *)(((unsigned char *)&header) + 0x0) = 0xEA00002E;		// for PassMe's that start @ 0x08000000
 		} else if (!title)
 		{
 			memcpy(header.title, "HOMEBREW", 8);
@@ -438,7 +438,7 @@ void Create()
 		header.arm9_size = 0;
 		if (bSecureSyscalls)
 		{
-			unsigned_int x;
+			unsigned int x;
 			FILE *fARM9 = fopen(arm9filename, "rb");
 			if (fARM9)
 			{
@@ -830,35 +830,4 @@ void Create()
 	fwrite(&header, (header.unitcode&2) ? 0x1000 : 0x200, 1, fNDS);
 
 	fclose(fNDS);
-}
-
-unsigned short CalcHeaderCRC(Header &h)
-{
-	return Crc16(&h, 0x15E);
-}
-
-unsigned short CalcLogoCRC(Header &h)
-{
-	return Crc16(h.logo, 156);
-}
-
-unsigned short CalcSecureAreaCRC(bool bit)
-{
-	// Placeholder: In most cases this matches the existing field or is calculated from fNDS
-	return header.secure_area_crc;
-}
-
-extern "C" unsigned short Crc16(const void *ptr, int len)
-{
-	// Simple implementation if crc.cpp is missing
-	unsigned char *data = (unsigned char *)ptr;
-	unsigned short crc = 0xFFFF;
-	for (int i = 0; i < len; i++) {
-		crc ^= data[i] << 8;
-		for (int j = 0; j < 8; j++) {
-			if (crc & 0x8000) crc = (crc << 1) ^ 0x1021;
-			else crc <<= 1;
-		}
-	}
-	return crc;
 }

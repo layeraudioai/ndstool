@@ -29,11 +29,11 @@
 #include "little.h"
 
 /* Types for use within ELF. */
-typedef unsigned_int Elf32_Addr;  /* Unsigned program address. */
-typedef unsigned_short Elf32_Half;  /* Unsigned medium integer.  */
-typedef unsigned_int Elf32_Off;   /* Unsigned file offset.     */
-typedef signed_int  Elf32_Sword; /* Signed large integer.     */
-typedef unsigned_int Elf32_Word;  /* Unsigned large integer.   */
+typedef unsigned int Elf32_Addr;  /* Unsigned program address. */
+typedef unsigned short Elf32_Half;  /* Unsigned medium integer.  */
+typedef unsigned int Elf32_Off;   /* Unsigned file offset.     */
+typedef int  Elf32_Sword; /* Signed large integer.     */
+typedef unsigned int Elf32_Word;  /* Unsigned large integer.   */
 
 /* Identification indices. */
 typedef enum

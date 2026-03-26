@@ -494,7 +494,7 @@ int main(int argc, char *argv[])
 					bannersize = header.banner_size;
 				} else {
 					fseek(fNDS, header.banner_offset, SEEK_SET);
-					unsigned_short version;
+					unsigned short version;
 					fread(&version, sizeof(version), 1, fNDS);
 					bannersize = CalcBannerSize(version);
 				}

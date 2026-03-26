@@ -34,7 +34,7 @@ extern unsigned int free_file_id;
 extern unsigned int _entry_start;
 extern unsigned int file_top;
 
-extern std::vector<std::pair<unsigned_int, unsigned_int>> overlay_fat_entries;
+extern std::vector<std::pair<unsigned int, unsigned int>> overlay_fat_entries;
 
 extern int verbose;
 extern Header header;

@@ -1,0 +1,55 @@
+NDSTOOL_DATE ?= $(shell date +"%b %e %Y")
+PACKAGE_VERSION ?= 3.1.4
+
+# Cross-compiler prefix
+CROSS_COMPILE := x86_64-w64-mingw32-
+
+CXX := $(CROSS_COMPILE)g++
+CC  := $(CROSS_COMPILE)gcc
+
+CXXFLAGS := -O2 -Wall -Wextra -I. \
+            -DNDSTOOL_DATE="\"$(NDSTOOL_DATE)\"" \
+            -DPACKAGE_VERSION="\"$(PACKAGE_VERSION)\""
+
+CFLAGS   := -O2 -Wall -Wextra -I.
+
+# Static linking ensures the .exe doesn't depend on external MinGW DLLs
+LDFLAGS  := -static-libgcc -static-libstdc++ -static
+
+TARGET := ../ndstool.exe
+
+SRCS_CPP := banner.cpp \
+            bigint.cpp \
+            crc.cpp \
+            elf.cpp \
+            encryption.cpp \
+            header.cpp \
+            hook.cpp \
+            logo.cpp \
+            ndscreate.cpp \
+            ndsextract.cpp \
+            ndscodes.cpp \
+            ndstool.cpp \
+            ndstree.cpp \
+            raster.cpp \
+            sha1.cpp
+
+SRCS_C   := loadme.c
+
+OBJS     := $(SRCS_CPP:.cpp=.o) $(SRCS_C:.c=.o)
+
+all: $(TARGET)
+
+$(TARGET): $(OBJS)
+	$(CXX) -o $@ $^ $(LDFLAGS)
+
+%.o: %.cpp
+	$(CXX) $(CXXFLAGS) -c $< -o $@
+
+%.o: %.c
+	$(CC) $(CFLAGS) -c $< -o $@
+
+clean:
+	rm -f $(OBJS) $(TARGET)
+
+.PHONY: all clean

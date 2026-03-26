@@ -34,9 +34,9 @@ void ExtractFile(const char *rootdir, const char *prefix, const char *entry_name
 	
 	// read FAT data
 	fseek(fNDS, header.fat_offset + 8*file_id, SEEK_SET);
-	unsigned_int top;
+	unsigned int top;
 	fread(&top, 1, sizeof(top), fNDS);
-	unsigned_int bottom;
+	unsigned int bottom;
 	fread(&bottom, 1, sizeof(bottom), fNDS);
 	unsigned int size = bottom - top;
 	if (size > (1U << (17 + header.devicecap))) { fprintf(stderr, "File %u: Size is too big. FAT offset 0x%X contains invalid data.\n", file_id, header.fat_offset + 8*file_id); exit(1); }
@@ -116,11 +116,11 @@ void ExtractDirectory(const char *prefix, unsigned int dir_id)
 	unsigned int save_filepos = ftell(fNDS);
 
 	fseek(fNDS, header.fnt_offset + 8*(dir_id & 0xFFF), SEEK_SET);
-	unsigned_int entry_start;	// reference location of entry name
+	unsigned int entry_start;	// reference location of entry name
 	fread(&entry_start, 1, sizeof(entry_start), fNDS);
-	unsigned_short top_file_id;	// file ID of top entry 
+	unsigned short top_file_id;	// file ID of top entry 
 	fread(&top_file_id, 1, sizeof(top_file_id), fNDS);
-	unsigned_short parent_id;	// ID of parent directory or directory count (root)
+	unsigned short parent_id;	// ID of parent directory or directory count (root)
 	fread(&parent_id, 1, sizeof(parent_id), fNDS);
 
 	fseek(fNDS, header.fnt_offset + entry_start, SEEK_SET);
@@ -145,7 +145,7 @@ void ExtractDirectory(const char *prefix, unsigned int dir_id)
 		fread(entry_name, 1, entry_type_name_length & 127, fNDS);
 		if (entry_type_directory)
 		{
-			unsigned_short dir_id;
+			unsigned short dir_id;
 			fread(&dir_id, 1, sizeof(dir_id), fNDS);
 			
 			if (filerootdir_num > 0)
@@ -250,14 +250,14 @@ void ExtractOverlayFiles()
 /*
  * Extract
  */
-void Extract(char *outfilename, bool indirect_offset, unsigned int offset, bool indirect_size, unsigned size, bool with_footer)
+void Extract(char *outfilename, bool indirect_offset, unsigned int offset, bool indirect_size, unsigned int size, bool with_footer)
 {
 	fNDS = fopen(ndsfilename, "rb");
 	if (!fNDS) { fprintf(stderr, "Cannot open file '%s'.\n", ndsfilename); exit(1); }
 	fread(&header, 512, 1, fNDS);
 
-	if (indirect_offset) offset = *((unsigned_int *)&header + offset/4);
-	if (indirect_size) size = *((unsigned_int *)&header + size/4);
+	if (indirect_offset) offset = *((unsigned int *)&header + offset/4);
+	if (indirect_size) size = *((unsigned int *)&header + size/4);
 	
 	fseek(fNDS, offset, SEEK_SET);
 
@@ -275,7 +275,7 @@ void Extract(char *outfilename, bool indirect_offset, unsigned int offset, bool 
 
 	if (with_footer)
 	{
-		unsigned_int nitrocode;
+		unsigned int nitrocode;
 		fread(&nitrocode, sizeof(nitrocode), 1, fNDS);
 		if (nitrocode == 0xDEC00621)
 		{
@@ -290,49 +290,4 @@ void Extract(char *outfilename, bool indirect_offset, unsigned int offset, bool 
 
 	fclose(fo);
 	fclose(fNDS);
-}
-
-void ShowInfo(char *ndsfilename)
-{
-	fNDS = fopen(ndsfilename, "rb");
-	if (!fNDS) { fprintf(stderr, "Cannot open file '%s'.\n", ndsfilename); exit(1); }
-	fread(&header, 1, 512, fNDS);
-	fclose(fNDS);
-
-	printf("Game Title:    %.12s\n", header.title);
-	printf("Game Code:     %.4s\n", header.gamecode);
-	printf("Maker Code:    %.2s\n", header.makercode);
-	printf("Unit Code:     0x%02X (%s)\n", (unsigned int)header.unitcode, (header.unitcode & 2) ? "DSi" : "NDS");
-	printf("Encryption:    0x%08X\n", (unsigned int)header.rom_control_info1);
-	printf("Capacity:      0x%02X (%u Mbit)\n", (unsigned int)header.devicecap, (unsigned int)((1 << header.devicecap) / 1024 / 1024 * 128));
-	printf("ARM9:          0x%08X (offset), 0x%08X (entry), 0x%08X (RAM), 0x%08X (size)\n", (unsigned int)header.arm9_rom_offset, (unsigned int)header.arm9_entry_address, (unsigned int)header.arm9_ram_address, (unsigned int)header.arm9_size);
-	printf("ARM7:          0x%08X (offset), 0x%08X (entry), 0x%08X (RAM), 0x%08X (size)\n", (unsigned int)header.arm7_rom_offset, (unsigned int)header.arm7_entry_address, (unsigned int)header.arm7_ram_address, (unsigned int)header.arm7_size);
-	printf("FNT:           0x%08X (offset), 0x%08X (size)\n", (unsigned int)header.fnt_offset, (unsigned int)header.fnt_size);
-	printf("FAT:           0x%08X (offset), 0x%08X (size)\n", (unsigned int)header.fat_offset, (unsigned int)header.fat_size);
-	printf("Banner:        0x%08X (offset)\n", (unsigned int)header.banner_offset);
-	printf("Header CRC:    0x%04X\n", (unsigned int)header.header_crc);
-	printf("Logo CRC:      0x%04X\n", (unsigned int)header.logo_crc);
-}
-
-void FixHeaderCRC(char *ndsfilename)
-{
-	fNDS = fopen(ndsfilename, "rb+");
-	if (!fNDS) { fprintf(stderr, "Cannot open file '%s'.\n", ndsfilename); exit(1); }
-	fread(&header, 1, 512, fNDS);
-
-	header.logo_crc = CalcLogoCRC(header);
-	header.header_crc = CalcHeaderCRC(header);
-
-	fseek(fNDS, 0, SEEK_SET);
-	fwrite(&header, 1, 512, fNDS);
-	fclose(fNDS);
-	printf("Header CRCs fixed.\n");
-}
-
-int DetectRomType()
-{
-	if (header.unitcode & 0x02) return ROMTYPE_NDSDUMPED;
-	if (header.arm9_rom_offset < 0x4000) return ROMTYPE_HOMEBREW;
-	if (header.rom_control_info1 & 0x00FF0000) return ROMTYPE_ENCRSECURE;
-	return ROMTYPE_NDSDUMPED;
 }
